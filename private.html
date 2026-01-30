@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privát Szoba</title>
+    <style>
+        :root { --gold: linear-gradient(45deg, #ffd700, #ff8c00); --electric: #00f2ff; --bg: #050505; }
+        body, html { margin: 0; padding: 0; background-color: var(--bg); font-family: 'Arial Black', sans-serif; overflow: hidden; height: 100vh; color: white; display: flex; justify-content: center; align-items: center; }
+        
+        .electric-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .electric-arc { fill: none; stroke: var(--electric); stroke-width: 3; filter: drop-shadow(0 0 12px var(--electric)); stroke-dasharray: 100, 1000; animation: flow 4s linear infinite; }
+        @keyframes flow { from { stroke-dashoffset: 1100; } to { stroke-dashoffset: 0; } }
+
+        .private-card { position: relative; z-index: 10; background: rgba(255,255,255,0.05); padding: 40px; border-radius: 30px; border: 2px solid #ffd700; backdrop-filter: blur(20px); text-align: center; width: 350px; }
+        input { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 12px; border: 2px solid #ffd700; background: #000; color: #fff; text-align: center; font-size: 1.5rem; outline: none; }
+        button { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: none; background: var(--gold); font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        button:hover { transform: scale(1.03); }
+        .back { background: none; border: 1px solid white; color: white; }
+
+        /* MODAL */
+        #custom-alert { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .alert-box { background: #111; border: 2px solid #ffd700; padding: 30px; border-radius: 20px; text-align: center; width: 280px; box-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
+    </style>
+</head>
+<body>
+    <svg class="electric-container" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+        <path class="electric-arc" d="M 0,200 Q 150,500 0,800" /><path class="electric-arc" d="M 1000,200 Q 850,500 1000,800" />
+    </svg>
+
+    <div class="private-card">
+        <h2 style="color: #ffd700;">PRIVÁT SZOBA</h2>
+        <input type="text" id="code" placeholder="SZOBAKÓD">
+        <button onclick="joinRoom()">Csatlakozás</button>
+        <button onclick="gen()">Kód generálása</button>
+        <button class="back" onclick="location.href='index.html'">Vissza</button>
+    </div>
+
+    <div id="custom-alert">
+        <div class="alert-box">
+            <h3 id="alert-msg">CSATLAKOZVA!</h3>
+            <button onclick="closeAlert()">RENDBEN</button>
+        </div>
+    </div>
+
+    <script>
+        function gen() { document.getElementById('code').value = Math.random().toString(36).substring(2,8).toUpperCase(); }
+        function joinRoom() {
+            const code = document.getElementById('code').value;
+            if(code) {
+                document.getElementById('alert-msg').innerText = "SZOBA: " + code + "\nCsatlakozás...";
+                document.getElementById('custom-alert').style.display = 'flex';
+            }
+        }
+        function closeAlert() { document.getElementById('custom-alert').style.display = 'none'; }
+    </script>
+</body>
+</html>

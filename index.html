@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lobby - A NAGY Kacsapolás</title>
+    <style>
+        :root { --gold: linear-gradient(45deg, #ffd700, #ff8c00); --electric: #00f2ff; --bg: #050505; }
+        body, html { margin: 0; padding: 0; background-color: var(--bg); font-family: 'Arial Black', sans-serif; overflow: hidden; height: 100vh; color: white; }
+        
+        .electric-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .electric-arc { fill: none; stroke: var(--electric); stroke-width: 3; filter: drop-shadow(0 0 12px var(--electric)); stroke-dasharray: 100, 1000; animation: flow 4s linear infinite; }
+        @keyframes flow { from { stroke-dashoffset: 1100; } to { stroke-dashoffset: 0; } }
+
+        #main-window { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 70%; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 30px; backdrop-filter: blur(20px); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
+        #main-window.pip-mode { transform: translate(0, 0) scale(0.35); top: auto; left: auto; bottom: 30px; right: 30px; border-color: var(--electric); box-shadow: 0 0 30px var(--electric); }
+
+        .window-controls { position: absolute; top: 20px; left: 30px; display: flex; gap: 12px; }
+        .dot { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; border: none; transition: 0.3s; }
+        .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
+        .dot:hover { transform: scale(1.3); }
+
+        .btn-group { display: flex; flex-direction: column; gap: 20px; }
+        button { padding: 18px 50px; border-radius: 15px; border: none; background: var(--gold); font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; min-width: 280px; }
+        button:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+
+        /* MODAL */
+        #custom-alert { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .alert-box { background: #111; border: 2px solid #ff5f56; padding: 30px; border-radius: 20px; text-align: center; }
+        .alert-box button { background: #ff5f56; color: white; padding: 10px 20px; margin-top: 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        #duck-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
+    </style>
+</head>
+<body>
+    <script>if(localStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'login.html';</script>
+
+    <svg class="electric-container" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+        <path class="electric-arc" d="M 0,200 Q 150,500 0,800" /><path class="electric-arc" d="M 1000,200 Q 850,500 1000,800" />
+    </svg>
+
+    <canvas id="duck-canvas"></canvas>
+
+    <div id="main-window">
+        <div class="window-controls">
+            <div class="dot red" onclick="showLogout()"></div>
+            <div class="dot yellow" onclick="document.getElementById('main-window').classList.add('pip-mode')"></div>
+            <div class="dot green" onclick="document.getElementById('main-window').classList.remove('pip-mode')"></div>
+        </div>
+        <h1 id="title">A <strong>NAGY</strong> KACSAPOLÁS</h1>
+        <div class="btn-group">
+            <button onclick="location.href='publick.html'">Új játék</button>
+            <button onclick="location.href='private.html'">Privát szoba</button>
+        </div>
+    </div>
+
+    <div id="custom-alert">
+        <div class="alert-box">
+            <h3>KIJELENTKEZÉS?</h3>
+            <button onclick="confirmLogout()">IGEN</button>
+            <button style="background:#555" onclick="closeAlert()">MÉGSE</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        function showLogout() { document.getElementById('custom-alert').style.display = 'flex'; }
+        function closeAlert() { document.getElementById('custom-alert').style.display = 'none'; }
+        function confirmLogout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+        // Three.js 3D kacsa (kocka helyettesítővel)
+        let scene = new THREE.Scene();
+        let camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000);
+        let renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('duck-canvas'), antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.position.z = 5;
+        let duck = new THREE.Mesh(new THREE.BoxGeometry(1.5,1.5,1.5), new THREE.MeshPhongMaterial({color: 0xffff00}));
+        scene.add(duck, new THREE.AmbientLight(0xffffff, 0.8));
+        function animate() { requestAnimationFrame(animate); duck.rotation.y += 0.01; renderer.render(scene, camera); }
+        animate();
+    </script>
+</body>
+</html>
